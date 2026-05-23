@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://expensesplitter-yj5b.onrender.com/",
+  baseURL: "https://expensesplitter-yj5b.onrender.com/api",
 });
 
 API.interceptors.request.use(
