@@ -80,16 +80,53 @@ function Register() {
   }
 
     setLoading(true);
-    try {
-      await API.post("/user/register", formData);
-      setMessage("Registration successful!");
-      router.push("/login");
-    } catch (err) {
-      console.log(err);
-      setError("Registration failed");
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+
+try {
+
+  // Fake slow API
+  await new Promise((resolve) =>
+    setTimeout(resolve, 1200)
+  );
+
+  // Fake random failure (10%)
+  if (Math.random() < 0.1) {
+
+    throw new Error(
+      "Registration service busy — try again"
+    );
+
+  }
+
+  await API.post(
+    "/user/register",
+    formData
+  );
+
+  setMessage(
+    "Registration successful!"
+  );
+
+  setTimeout(() => {
+
+    router.push("/login");
+
+  }, 1000);
+
+} catch (err) {
+
+  console.log(err);
+
+  setError(
+    err.message ||
+    "Registration failed"
+  );
+
+} finally {
+
+  setLoading(false);
+
+}
   };
   useEffect(() => {
   
@@ -120,8 +157,20 @@ function Register() {
 )}
 
 {error && (
-  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
-    {error}
+  <div
+    className="bg-red-100 border border-red-400
+               text-red-700 px-4 py-3 rounded-xl mb-4
+               text-center"
+  >
+    <p>{error}</p>
+
+    <button
+      onClick={() => setError("")}
+      className="mt-2 bg-red-500 hover:bg-red-600
+                 text-white px-4 py-1.5 rounded-lg text-sm"
+    >
+      Try Again
+    </button>
   </div>
 )}
         <div className="text-center mb-8">

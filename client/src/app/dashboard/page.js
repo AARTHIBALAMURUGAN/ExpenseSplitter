@@ -16,32 +16,135 @@ function Dashboard() {
       ? JSON.parse(localStorage.getItem("user"))
       : null;
 
-  const fetchGroup = async () => {
-    try {
-      const res = await API.get("/group/getgroup");
-      setGroups(res.data);
-    } catch (err) {
-      console.log(err);
+const fetchGroup = async () => {
+
+  try {
+
+    // Fake slow API
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1000)
+    );
+
+    // Fake random failure (10%)
+    if (Math.random() < 0.1) {
+
+      throw new Error(
+        "Server is busy — please refresh"
+      );
+
     }
-  };
+
+    const res = await API.get(
+      "/group/getgroup"
+    );
+
+    // Fake duplicate data simulation
+    let data = res.data;
+
+    if (
+      Math.random() < 0.15 &&
+      data.length > 0
+    ) {
+
+      data = [...data, data[0]];
+
+    }
+
+    // Remove duplicates gracefully
+    const uniqueGroups =
+      data.filter(
+        (group, index, self) =>
+          index ===
+          self.findIndex(
+            (g) => g._id === group._id
+          )
+      );
+
+    setGroups(uniqueGroups);
+
+  } catch (err) {
+
+    console.log(err);
+
+    seterror(
+      err.message ||
+      "Failed to load groups"
+    );
+
+  }
+
+};
 
   const createGroup = async (e) => {
-    e.preventDefault();
-    try {
-      await API.post("/group/creategroup", {
+
+  e.preventDefault();
+
+  seterror("");
+  setMessage("");
+
+  if (!groupName.trim()) {
+
+    seterror("Group name required");
+
+    return;
+
+  }
+
+  if (
+    groupName.trim().length < 3
+  ) {
+
+    seterror(
+      "Group name must be at least 3 characters"
+    );
+
+    return;
+
+  }
+
+  try {
+
+    // Fake slow API
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1200)
+    );
+
+    // Fake random failure
+    if (Math.random() < 0.1) {
+
+      throw new Error(
+        "Unable to create group right now"
+      );
+
+    }
+
+    await API.post(
+      "/group/creategroup",
+      {
         groupname: groupName,
         members: [user._id],
         createdBy: user._id,
-      });
-      setMessage("Group Created");
-      setGroupName("");
-      
-      fetchGroup();
-    } catch (err) {
-      console.log(err);
-      seterror("Failed");
-    }
-  };
+      }
+    );
+
+    setMessage("Group Created");
+
+    setGroupName("");
+
+    fetchGroup();
+
+  } catch (err) {
+
+    console.log(err);
+
+    seterror(
+      err.message ||
+      "Failed to create group"
+    );
+
+  }
+
+};
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -97,14 +200,24 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
    {message && (
-  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-4">
-    {message}
+  <div
+    className="fixed top-5 right-5 z-50
+               bg-green-100 border border-green-400
+               text-green-700 px-5 py-3 rounded-2xl
+               shadow-lg text-sm font-medium"
+  >
+    ✓ {message}
   </div>
 )}
 
 {error && (
-  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
-    {error}
+  <div
+    className="fixed top-5 right-5 z-50
+               bg-red-100 border border-red-400
+               text-red-700 px-5 py-3 rounded-2xl
+               shadow-lg text-sm font-medium"
+  >
+    ✕ {error}
   </div>
 )}
       <div className="bg-white border border-gray-200 rounded-2xl px-6 py-4

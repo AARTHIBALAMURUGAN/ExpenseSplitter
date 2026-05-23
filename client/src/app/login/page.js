@@ -19,6 +19,18 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     try {
+       await new Promise((resolve) =>
+      setTimeout(resolve, 1200)
+    );
+
+    // Fake random failure (10%)
+    if (Math.random() < 0.1) {
+
+      throw new Error(
+        "Network unstable — please retry"
+      );
+
+    }
       const res = await API.post("/user/login", formData);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data));
@@ -61,8 +73,20 @@ function Login() {
 )}
 
 {error && (
-  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
-    {error}
+  <div className="bg-red-100 border border-red-400
+                  text-red-700 px-4 py-3 rounded-xl mb-4
+                  text-center">
+
+    <p>{error}</p>
+
+    <button
+      onClick={handleSubmit}
+      className="mt-2 bg-red-500 hover:bg-red-600
+                 text-white px-4 py-1.5 rounded-lg text-sm"
+    >
+      Retry
+    </button>
+
   </div>
 )}
         <div className="text-center mb-8">
