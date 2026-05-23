@@ -118,6 +118,7 @@ try {
   console.log(err);
 
   setError(
+   err.response?.data?.message || 
     err.message ||
     "Registration failed"
   );

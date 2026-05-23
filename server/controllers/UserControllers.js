@@ -15,11 +15,11 @@ const RegisterUser=async(req,res)=>{
     try{
         const {name,email,password,mobile_no}=req.body;
         if(!name || !email || !password ||!mobile_no){
-            res.status(400).json({message:"Please filled All Fields"});
+         return   res.status(400).json({message:"Please filled All Fields"});
         }
         const userExist=await User.findOne({email});
         if(userExist){
-            res.status(400).json({message:"User Already exists"})
+           return res.status(400).json({message:"User Already exists"})
         }
 
         const hashedPassword=await bcrypt.hash(
@@ -42,7 +42,7 @@ const RegisterUser=async(req,res)=>{
 
     }
     catch(err){
-        res.status(500).json({message:err.message})
+       return res.status(500).json({message:err.message})
     }
 }
 //login
@@ -52,7 +52,7 @@ const Login=async(req,res)=>{
 
         const user=await User.findOne({email});
         if(!user){
-            res.status(400).json({message:"Invalid Email"});
+           return res.status(400).json({message:"Invalid Email"});
         }
 
         const isMatch=await bcrypt.compare(
@@ -61,7 +61,7 @@ const Login=async(req,res)=>{
         )
 
         if(!isMatch){
-            res.status(400).json({message:"Password is wrong"})
+          return  res.status(400).json({message:"Password is wrong"})
         }
 
         res.status(200).json({
@@ -73,7 +73,7 @@ const Login=async(req,res)=>{
 
     }
     catch(err){
-        res.status(500).json({message:err.message})
+        return res.status(500).json({message:err.message})
     }
 
 }
