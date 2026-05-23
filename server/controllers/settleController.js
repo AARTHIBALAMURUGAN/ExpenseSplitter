@@ -1,5 +1,5 @@
 const Expense = require("../models/ExpenseModels");
-const calculateBalances = require("../utils/settlement");
+const calculateBalances = require("../Utils/settlement");
 
 
 //who owes who and who settled
