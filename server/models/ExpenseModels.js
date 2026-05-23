@@ -1,0 +1,42 @@
+const mongoose=require("mongoose");
+const ExpenseSchema=new mongoose.Schema(
+    {
+        description:{
+            type:String,
+            required:true,
+            trime:true
+        },
+        amount:{
+            type:Number,
+            required:true,
+
+        },
+        group:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Group",
+            "required":true,
+        },
+        paidBy:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User",
+            required:true,
+        },
+        splitBetween:[
+            {
+                type:mongoose.Schema.Types.ObjectId,
+                ref:"User"
+            },
+        ],
+        splitAmount:{
+            type:Number,
+            required:true,
+        },
+        paidMembers:[{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        }]
+    },{
+        timestamps:true
+    }
+)
+module.exports=mongoose.model("Expense",ExpenseSchema)
